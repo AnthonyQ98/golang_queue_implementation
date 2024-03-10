@@ -1,9 +1,10 @@
 package queue
 
+import "fmt"
+
 type Queue struct {
 	size  int
 	first *Node
-	queue []*Node
 }
 
 func (q *Queue) Peek() *Node {
@@ -21,7 +22,11 @@ func (q *Queue) Offer(n *Node) {
 	if q.IsEmpty() {
 		q.first = n
 	} else {
-		q.queue = append(q.queue, n)
+		current := q.first
+		for current.next != nil {
+			current = current.next
+		}
+		current.next = n
 	}
 	q.size++
 }
@@ -30,25 +35,28 @@ func (q *Queue) Poll() *Node {
 	if q.IsEmpty() {
 		return nil
 	}
-	var temp = *q.first
+	var temp = q.first
 	q.first = temp.next
+	temp.next = nil
 	q.size--
-	return &temp
+	return temp
 }
 
 func (q *Queue) IsEmpty() bool {
 	return q.size == 0
 }
 
-type Node struct {
-	next    *Node
-	element string
-}
+func (q *Queue) PrintQueue() {
+	if q.IsEmpty() {
+		fmt.Println("Queue is empty")
+		return
+	}
 
-func (n *Node) GetElement() any {
-	return n.element
-}
+	current := q.first
+	for current != nil {
+		fmt.Printf("%s ", current.GetElement())
+		current = current.next
+	}
 
-func NewNode(e string) *Node {
-	return &Node{nil, e}
+	fmt.Println()
 }
